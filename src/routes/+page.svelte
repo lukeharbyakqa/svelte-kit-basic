@@ -1,15 +1,21 @@
 <script>
-	import Index from './index.svelte';
-	import Binding from './binding.svelte';
-	import Conditions from './conditions.svelte';
-	import Loops from './loops.svelte';
+	import GridTile from '$lib/GridTile.svelte';
+
+	let products = [
+		{
+			title: 'Cup',
+			cost: '$10',
+			src: 'https://cdn.shopify.com/s/files/1/0434/0285/4564/products/Cup-front-black.png?v=1623159405'
+		},
+		{
+			title: 'Shirt',
+			cost: '$10',
+			src: 'https://cdn.shopify.com/s/files/1/0434/0285/4564/products/short-sleeve-t-shirt-0.png?v=1622902418'
+		}
+	];
 </script>
 
 <pre>PAGE</pre>
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-
-<Loops />
-<Conditions />
-<Binding />
-<Index />
+{#each products as product}
+	<GridTile {product} />
+{/each}
