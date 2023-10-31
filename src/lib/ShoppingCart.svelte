@@ -1,8 +1,10 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
-	export let cartItems;
+	import CartItemsStore from '../Store.js';
 
-	const dispatch = createEventDispatcher();
+	let cartItems;
+	CartItemsStore.subscribe((data) => {
+		cartItems = data;
+	});
 	function addOne(i) {
 		cartItems[i].quantity = cartItems[i].quantity + 1;
 	}
@@ -16,10 +18,13 @@
 		quantity: 1
 	};
 	function addItemToCart() {
-		dispatch('addItemToCart', {
-			item: newItem
+		CartItemsStore.update((currentData) => {
+			return [newItem, ...currentData];
 		});
 	}
+	$: hideSuggestedItem = cartItems.find((product) => {
+		return product.name == 'T-Shirt';
+	});
 </script>
 
 <div
@@ -30,24 +35,26 @@
 			<div class="text-2xl font-medium">My Cart</div>
 			<button on:click class="text-sm uppercase opacity-80 hover:opacity-100">close</button>
 		</div>
-		<div class="mb-4 bg-zinc-900 px-6 py-1 flex items-center justify-between">
-			<div class="relative flex items-center">
-				<img src={newItem.src} class="h-10 bg-white mr-2" alt="cup" />
-				<p class="uppercase font-medium">{newItem.name}</p>
-				<div
-					class="absolute top-0 left-0 -ml-4 bg-white text-black font-medium rounded-full px-1 py-px flex items-center justify-center"
-					style="font-size: 10px;"
-				>
-					NEW!
+		{#if !hideSuggestedItem}
+			<div class="mb-4 bg-zinc-900 px-6 py-1 flex items-center justify-between">
+				<div class="relative flex items-center">
+					<img src={newItem.src} class="h-10 bg-white mr-2" alt="cup" />
+					<p class="uppercase font-medium">{newItem.name}</p>
+					<div
+						class="absolute top-0 left-0 -ml-4 bg-white text-black font-medium rounded-full px-1 py-px flex items-center justify-center"
+						style="font-size: 10px;"
+					>
+						NEW!
+					</div>
 				</div>
+				<button
+					on:click={addItemToCart}
+					class="bg-white/90 p-1 text-black uppercase font-medium text-xs"
+				>
+					Add to Cart
+				</button>
 			</div>
-			<button
-				on:click={addItemToCart}
-				class="bg-white/90 p-1 text-black uppercase font-medium text-xs"
-			>
-				Add to Cart
-			</button>
-		</div>
+		{/if}
 		{#if cartItems.length === 0}
 			<div class="mt-20 w-full flex flex-col items-center justify-center overflow-hidden">
 				<div class="w-16 h-16 bg-white rounded-full flex items-center justify-center" />
@@ -58,7 +65,7 @@
 			{#each cartItems as item, i (item.name)}
 				<div>
 					<div class="w-full flex mb-2">
-						<img class="bg-white flex-none w-20" src={item.src} alt="product" />
+						<img class="bg-white flex-none w-20" src={item.src} />
 						<div class="flex flex-col justify-between ml-4 w-full">
 							<div class="w-full flex justify-between">
 								<di>
